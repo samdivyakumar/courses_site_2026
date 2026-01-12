@@ -6,6 +6,62 @@
 (function() {
     'use strict';
 
+    // =====================================================
+    // UTILITY FUNCTIONS
+    // =====================================================
+    
+    /**
+     * Safe querySelector - returns null if element not found
+     */
+    function safeQuerySelector(selector) {
+        try {
+            return document.querySelector(selector);
+        } catch (e) {
+            console.warn('Invalid selector:', selector);
+            return null;
+        }
+    }
+
+    /**
+     * Safe querySelectorAll - returns empty array if elements not found
+     */
+    function safeQuerySelectorAll(selector) {
+        try {
+            return Array.from(document.querySelectorAll(selector));
+        } catch (e) {
+            console.warn('Invalid selector:', selector);
+            return [];
+        }
+    }
+
+    /**
+     * Check if user prefers reduced motion
+     */
+    function prefersReducedMotion() {
+        return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+
+    /**
+     * Debounce function - limits the rate at which a function can fire
+     */
+    function debounce(func, wait) {
+        var timeout;
+        return function executedFunction() {
+            var context = this;
+            var args = arguments;
+            var later = function() {
+                timeout = null;
+                func.apply(context, args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // =====================================================
+    // INITIALIZATION
+    // =====================================================
+
     // Wait for DOM to be fully loaded
     document.addEventListener('DOMContentLoaded', function() {
         initBackToTop();
@@ -636,7 +692,7 @@
 
 /**
      * Testimonials Carousel Functionality
-     * Scroll-based carousel with center zoom effect
+     * Scroll-based carousel with center zoom effect and auto-scroll
      */
 function initTestimonialsCarousel() {
     var slider = safeQuerySelector('.testimonials-slider');
@@ -644,48 +700,20 @@ function initTestimonialsCarousel() {
     var prevBtn = safeQuerySelector('.testimonial-arrow-left');
     var nextBtn = safeQuerySelector('.testimonial-arrow-right');
     var pagination = safeQuerySelector('.testimonial-pagination');
+    var container = safeQuerySelector('.testimonials-carousel-container');
 
-    if (!slider || !items.length) return;
+    if (!slider || !items.length) {
+        console.log('Testimonials carousel: Missing slider or items');
+        return;
+    }
 
     var totalSlides = items.length;
     var autoScrollInterval = null;
     var autoScrollDelay = prefersReducedMotion() ? 8000 : 4000;
     var isScrolling = false;
     var scrollTimeout = null;
-    var isVisible = false;
-    var container = safeQuerySelector('.testimonials-carousel-container');
-
-    // Check if testimonials section is visible in viewport
-    function checkVisibility() {
-        if (!container) return false;
-        var rect = container.getBoundingClientRect();
-        var windowHeight = window.innerHeight || document.documentElement.clientHeight;
-        return (rect.top < windowHeight && rect.bottom > 0);
-    }
-
-    // Intersection Observer for visibility detection
-    function setupVisibilityObserver() {
-        if ('IntersectionObserver' in window) {
-            var observer = new IntersectionObserver(function(entries) {
-                entries.forEach(function(entry) {
-                    isVisible = entry.isIntersecting;
-                    if (isVisible) {
-                        startAutoScroll();
-                    } else {
-                        stopAutoScroll();
-                    }
-                });
-            }, { threshold: 0.2 });
-            
-            if (container) {
-                observer.observe(container);
-            }
-        } else {
-            // Fallback for older browsers
-            isVisible = true;
-            startAutoScroll();
-        }
-    }
+    var isVisible = true;
+    var isPaused = false;
 
     // Create pagination dots
     function createPagination() {
@@ -710,6 +738,8 @@ function initTestimonialsCarousel() {
 
     // Get the center item index based on scroll position
     function getCenterItemIndex() {
+        if (!slider) return 0;
+        
         var sliderRect = slider.getBoundingClientRect();
         var sliderCenter = sliderRect.left + sliderRect.width / 2;
         var closestIndex = 0;
@@ -731,6 +761,8 @@ function initTestimonialsCarousel() {
 
     // Update item states based on scroll position
     function updateItemStates() {
+        if (!slider) return;
+        
         var sliderRect = slider.getBoundingClientRect();
         var sliderCenter = sliderRect.left + sliderRect.width / 2;
 
@@ -770,11 +802,9 @@ function initTestimonialsCarousel() {
 
     // Scroll to specific item
     function scrollToItem(index) {
-        if (!items[index]) return;
+        if (!items[index] || !slider) return;
         
         var item = items[index];
-        var itemRect = item.getBoundingClientRect();
-        var sliderRect = slider.getBoundingClientRect();
         
         // Calculate the scroll position to center the item
         var itemCenter = item.offsetLeft + item.offsetWidth / 2;
@@ -801,13 +831,14 @@ function initTestimonialsCarousel() {
         scrollToItem(prevIndex);
     }
 
-    // Auto scroll
+    // Auto scroll functions
     function startAutoScroll() {
         if (prefersReducedMotion()) return;
-        if (!isVisible) return;
+        if (isPaused) return;
+        
         stopAutoScroll();
         autoScrollInterval = setInterval(function() {
-            if (!isScrolling && isVisible) {
+            if (!isScrolling && isVisible && !isPaused) {
                 nextSlide();
             }
         }, autoScrollDelay);
@@ -822,6 +853,18 @@ function initTestimonialsCarousel() {
 
     function resetAutoScroll() {
         stopAutoScroll();
+        if (!isPaused) {
+            startAutoScroll();
+        }
+    }
+
+    function pauseAutoScroll() {
+        isPaused = true;
+        stopAutoScroll();
+    }
+
+    function resumeAutoScroll() {
+        isPaused = false;
         startAutoScroll();
     }
 
@@ -841,10 +884,32 @@ function initTestimonialsCarousel() {
         scrollTimeout = setTimeout(function() {
             isScrolling = false;
             updateItemStates();
-        }, 100);
+        }, 150);
     }
 
-    // Event listeners
+    // Setup visibility observer for auto-scroll
+    function setupVisibilityObserver() {
+        if ('IntersectionObserver' in window && container) {
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    isVisible = entry.isIntersecting;
+                    if (isVisible && !isPaused) {
+                        startAutoScroll();
+                    } else {
+                        stopAutoScroll();
+                    }
+                });
+            }, { threshold: 0.2 });
+            
+            observer.observe(container);
+        } else {
+            // Fallback for older browsers - always visible
+            isVisible = true;
+            startAutoScroll();
+        }
+    }
+
+    // Event listeners for navigation buttons
     if (prevBtn) {
         prevBtn.addEventListener('click', function(e) {
             e.preventDefault();
@@ -865,18 +930,25 @@ function initTestimonialsCarousel() {
     slider.addEventListener('scroll', handleScroll, { passive: true });
 
     // Pause on hover
-    slider.addEventListener('mouseenter', stopAutoScroll);
-    slider.addEventListener('mouseleave', startAutoScroll);
+    slider.addEventListener('mouseenter', pauseAutoScroll);
+    slider.addEventListener('mouseleave', resumeAutoScroll);
+
+    // Also pause when hovering over container (includes arrows)
+    if (container) {
+        container.addEventListener('mouseenter', pauseAutoScroll);
+        container.addEventListener('mouseleave', resumeAutoScroll);
+    }
 
     // Touch support - pause auto scroll while touching
     slider.addEventListener('touchstart', function() {
-        stopAutoScroll();
+        pauseAutoScroll();
     }, { passive: true });
 
     slider.addEventListener('touchend', function() {
+        // Resume after a short delay
         setTimeout(function() {
-            startAutoScroll();
-        }, 1000);
+            resumeAutoScroll();
+        }, 2000);
     }, { passive: true });
 
     // Handle resize
@@ -899,6 +971,10 @@ function initTestimonialsCarousel() {
         }
     });
 
+    // Focus events - pause when focused
+    slider.addEventListener('focus', pauseAutoScroll);
+    slider.addEventListener('blur', resumeAutoScroll);
+
     // Initialize
     createPagination();
     
@@ -907,7 +983,9 @@ function initTestimonialsCarousel() {
         updateItemStates();
         // Setup visibility observer for auto-scroll
         setupVisibilityObserver();
-    }, 100);
+    }, 200);
+    
+    console.log('Testimonials carousel initialized with', totalSlides, 'slides');
 }
 
 })();
