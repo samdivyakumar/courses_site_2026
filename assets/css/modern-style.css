@@ -47,8 +47,9 @@ html {
 .nav-link {
     font-weight: 500;
     color: #ffffff !important;
-    padding: 0.5rem 1rem !important;
+    padding: 0.5rem 0.75rem !important;
     transition: color 0.3s ease;
+    white-space: nowrap;
 }
 
 .nav-link:hover {
@@ -1296,6 +1297,15 @@ body.lightbox-open {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     position: relative;
     overflow: hidden;
+}
+
+.testimonials-section .section-title {
+    padding-top: 40px;
+    color: #ffffff;
+}
+
+.testimonials-section .section-subtitle {
+    color: #ffffff;
 }
 
 /* Background decoration */
