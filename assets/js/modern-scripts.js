@@ -14,6 +14,7 @@
         initMobileDropdowns();
         initSectionTitleAnimations();
         initGalleryFilter();
+        initTestimonialsCarousel();
     });
 
     /**
@@ -635,10 +636,9 @@
 
 /**
      * Testimonials Carousel Functionality
-     * Enhanced with center zoom effect and smooth transitions
+     * Scroll-based carousel with center zoom effect
      */
 function initTestimonialsCarousel() {
-    var container = safeQuerySelector('.testimonials-carousel-container');
     var slider = safeQuerySelector('.testimonials-slider');
     var items = safeQuerySelectorAll('.testimonial-item');
     var prevBtn = safeQuerySelector('.testimonial-arrow-left');
@@ -647,18 +647,44 @@ function initTestimonialsCarousel() {
 
     if (!slider || !items.length) return;
 
-    var currentIndex = 0;
-    var autoScrollInterval = null;
-    var autoScrollDelay = prefersReducedMotion() ? 8000 : 5000; // Slower for reduced motion
     var totalSlides = items.length;
-    var isAnimating = false;
-    var animationDuration = prefersReducedMotion() ? 100 : 500;
+    var autoScrollInterval = null;
+    var autoScrollDelay = prefersReducedMotion() ? 8000 : 4000;
+    var isScrolling = false;
+    var scrollTimeout = null;
+    var isVisible = false;
+    var container = safeQuerySelector('.testimonials-carousel-container');
 
-    // Get number of visible slides based on screen width
-    function getVisibleSlides() {
-        if (window.innerWidth >= 992) return 3;
-        if (window.innerWidth >= 768) return 2;
-        return 1;
+    // Check if testimonials section is visible in viewport
+    function checkVisibility() {
+        if (!container) return false;
+        var rect = container.getBoundingClientRect();
+        var windowHeight = window.innerHeight || document.documentElement.clientHeight;
+        return (rect.top < windowHeight && rect.bottom > 0);
+    }
+
+    // Intersection Observer for visibility detection
+    function setupVisibilityObserver() {
+        if ('IntersectionObserver' in window) {
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    isVisible = entry.isIntersecting;
+                    if (isVisible) {
+                        startAutoScroll();
+                    } else {
+                        stopAutoScroll();
+                    }
+                });
+            }, { threshold: 0.2 });
+            
+            if (container) {
+                observer.observe(container);
+            }
+        } else {
+            // Fallback for older browsers
+            isVisible = true;
+            startAutoScroll();
+        }
     }
 
     // Create pagination dots
@@ -674,123 +700,116 @@ function initTestimonialsCarousel() {
                 dot.setAttribute('type', 'button');
                 if (index === 0) dot.classList.add('active');
                 dot.addEventListener('click', function() {
-                    if (!isAnimating) {
-                        goToSlide(index);
-                        resetAutoScroll();
-                    }
+                    scrollToItem(index);
+                    resetAutoScroll();
                 });
                 pagination.appendChild(dot);
             })(i);
         }
     }
 
-    // Update slider position
-    function updateSliderPosition() {
-        if (!items[0]) return;
-        var itemWidth = items[0].offsetWidth;
-        var offset = currentIndex * itemWidth;
-        slider.style.transform = 'translateX(-' + offset + 'px)';
-    }
-
-    // Update item states
-    function updateItemStates() {
-        var visibleSlides = getVisibleSlides();
+    // Get the center item index based on scroll position
+    function getCenterItemIndex() {
+        var sliderRect = slider.getBoundingClientRect();
+        var sliderCenter = sliderRect.left + sliderRect.width / 2;
+        var closestIndex = 0;
+        var closestDistance = Infinity;
 
         items.forEach(function(item, index) {
-            item.classList.remove('center', 'adjacent', 'hidden');
+            var itemRect = item.getBoundingClientRect();
+            var itemCenter = itemRect.left + itemRect.width / 2;
+            var distance = Math.abs(sliderCenter - itemCenter);
 
-            // Calculate center index based on visible slides
-            var centerIdx = currentIndex;
-            if (visibleSlides === 3) {
-                centerIdx = currentIndex + 1;
-            } else if (visibleSlides === 2) {
-                centerIdx = currentIndex;
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestIndex = index;
             }
+        });
 
-            if (index === centerIdx || (visibleSlides === 1 && index === currentIndex)) {
+        return closestIndex;
+    }
+
+    // Update item states based on scroll position
+    function updateItemStates() {
+        var sliderRect = slider.getBoundingClientRect();
+        var sliderCenter = sliderRect.left + sliderRect.width / 2;
+
+        items.forEach(function(item, index) {
+            var itemRect = item.getBoundingClientRect();
+            var itemCenter = itemRect.left + itemRect.width / 2;
+            var distance = Math.abs(sliderCenter - itemCenter);
+            var itemWidth = itemRect.width;
+
+            // Remove all state classes
+            item.classList.remove('center', 'adjacent', 'far');
+
+            // Determine state based on distance from center
+            if (distance < itemWidth * 0.4) {
                 item.classList.add('center');
-            } else if (Math.abs(index - centerIdx) === 1) {
+            } else if (distance < itemWidth * 1.2) {
                 item.classList.add('adjacent');
             } else {
-                item.classList.add('hidden');
+                item.classList.add('far');
             }
         });
-    }
 
-    // Update pagination
-    function updatePagination() {
-        var dots = safeQuerySelectorAll('.testimonial-pagination-dot');
-        var visibleSlides = getVisibleSlides();
-        var activeIdx = currentIndex;
-        if (visibleSlides === 3) activeIdx = currentIndex + 1;
-
-        dots.forEach(function(dot, index) {
-            dot.classList.toggle('active', index === activeIdx);
-            dot.setAttribute('aria-current', index === activeIdx ? 'true' : 'false');
-        });
-    }
-
-    // Main update
-    function updateSlider() {
-        updateSliderPosition();
-        updateItemStates();
+        // Update pagination
         updatePagination();
     }
 
-    // Go to slide
-    function goToSlide(index) {
-        if (isAnimating) return;
-        isAnimating = true;
+    // Update pagination dots
+    function updatePagination() {
+        var centerIndex = getCenterItemIndex();
+        var dots = safeQuerySelectorAll('.testimonial-pagination-dot');
 
-        var visibleSlides = getVisibleSlides();
-        var maxIndex = Math.max(0, totalSlides - visibleSlides);
-
-        // For 3 visible slides, clicking dot should center that card
-        if (visibleSlides === 3) {
-            currentIndex = Math.max(0, Math.min(index - 1, maxIndex));
-        } else {
-            currentIndex = Math.min(index, maxIndex);
-        }
-
-        if (currentIndex < 0) currentIndex = 0;
-        if (currentIndex > maxIndex) currentIndex = maxIndex;
-
-        updateSlider();
-
-        setTimeout(function() {
-            isAnimating = false;
-        }, animationDuration);
+        dots.forEach(function(dot, index) {
+            dot.classList.toggle('active', index === centerIndex);
+            dot.setAttribute('aria-current', index === centerIndex ? 'true' : 'false');
+        });
     }
 
-    // Next/Prev
+    // Scroll to specific item
+    function scrollToItem(index) {
+        if (!items[index]) return;
+        
+        var item = items[index];
+        var itemRect = item.getBoundingClientRect();
+        var sliderRect = slider.getBoundingClientRect();
+        
+        // Calculate the scroll position to center the item
+        var itemCenter = item.offsetLeft + item.offsetWidth / 2;
+        var sliderVisibleWidth = slider.clientWidth;
+        var scrollPosition = itemCenter - sliderVisibleWidth / 2;
+        
+        slider.scrollTo({
+            left: scrollPosition,
+            behavior: 'smooth'
+        });
+    }
+
+    // Next slide
     function nextSlide() {
-        var visibleSlides = getVisibleSlides();
-        var maxIndex = Math.max(0, totalSlides - visibleSlides);
-        if (currentIndex < maxIndex) {
-            currentIndex++;
-        } else {
-            currentIndex = 0;
-        }
-        updateSlider();
+        var currentIndex = getCenterItemIndex();
+        var nextIndex = (currentIndex + 1) % totalSlides;
+        scrollToItem(nextIndex);
     }
 
+    // Previous slide
     function prevSlide() {
-        var visibleSlides = getVisibleSlides();
-        var maxIndex = Math.max(0, totalSlides - visibleSlides);
-        if (currentIndex > 0) {
-            currentIndex--;
-        } else {
-            currentIndex = maxIndex;
-        }
-        updateSlider();
+        var currentIndex = getCenterItemIndex();
+        var prevIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+        scrollToItem(prevIndex);
     }
 
-    // Auto scroll - disabled if user prefers reduced motion
+    // Auto scroll
     function startAutoScroll() {
-        if (prefersReducedMotion()) return; // Don't auto-scroll for reduced motion
+        if (prefersReducedMotion()) return;
+        if (!isVisible) return;
         stopAutoScroll();
         autoScrollInterval = setInterval(function() {
-            if (!isAnimating) nextSlide();
+            if (!isScrolling && isVisible) {
+                nextSlide();
+            }
         }, autoScrollDelay);
     }
 
@@ -804,6 +823,25 @@ function initTestimonialsCarousel() {
     function resetAutoScroll() {
         stopAutoScroll();
         startAutoScroll();
+    }
+
+    // Handle scroll event with debouncing
+    function handleScroll() {
+        isScrolling = true;
+        
+        // Update states during scroll
+        updateItemStates();
+        
+        // Clear existing timeout
+        if (scrollTimeout) {
+            clearTimeout(scrollTimeout);
+        }
+        
+        // Set new timeout to detect scroll end
+        scrollTimeout = setTimeout(function() {
+            isScrolling = false;
+            updateItemStates();
+        }, 100);
     }
 
     // Event listeners
@@ -823,48 +861,53 @@ function initTestimonialsCarousel() {
         });
     }
 
-    // Hover pause
-    if (container) {
-        container.addEventListener('mouseenter', stopAutoScroll);
-        container.addEventListener('mouseleave', startAutoScroll);
-    }
+    // Scroll event listener
+    slider.addEventListener('scroll', handleScroll, { passive: true });
 
-    // Touch support
-    var touchStartX = 0;
+    // Pause on hover
+    slider.addEventListener('mouseenter', stopAutoScroll);
+    slider.addEventListener('mouseleave', startAutoScroll);
 
-    slider.addEventListener('touchstart', function(e) {
-        if (e.changedTouches && e.changedTouches[0]) {
-            touchStartX = e.changedTouches[0].screenX;
-            stopAutoScroll();
-        }
+    // Touch support - pause auto scroll while touching
+    slider.addEventListener('touchstart', function() {
+        stopAutoScroll();
     }, { passive: true });
 
-    slider.addEventListener('touchend', function(e) {
-        if (e.changedTouches && e.changedTouches[0]) {
-            var touchEndX = e.changedTouches[0].screenX;
-            var diff = touchStartX - touchEndX;
-
-            if (Math.abs(diff) > 50) {
-                if (diff > 0) nextSlide();
-                else prevSlide();
-            }
+    slider.addEventListener('touchend', function() {
+        setTimeout(function() {
             startAutoScroll();
-        }
+        }, 1000);
     }, { passive: true });
 
-    // Debounced resize handler for performance
-    var handleResize = debounce(updateSlider, 150);
+    // Handle resize
+    var handleResize = debounce(function() {
+        updateItemStates();
+    }, 150);
     window.addEventListener('resize', handleResize);
+
+    // Keyboard navigation
+    slider.setAttribute('tabindex', '0');
+    slider.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            prevSlide();
+            resetAutoScroll();
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            nextSlide();
+            resetAutoScroll();
+        }
+    });
 
     // Initialize
     createPagination();
-    updateSlider();
-    startAutoScroll();
-}
-
-// Initialize testimonials carousel
-if (safeQuerySelector('.testimonials-slider')) {
-    initTestimonialsCarousel();
+    
+    // Initial state update after a short delay to ensure layout is complete
+    setTimeout(function() {
+        updateItemStates();
+        // Setup visibility observer for auto-scroll
+        setupVisibilityObserver();
+    }, 100);
 }
 
 })();
