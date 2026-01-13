@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Test Suite - CMC Distance Education</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #667eea;
+        }
+        
+        .test-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #16213e;
+            border-radius: 10px;
+        }
+        
+        .test-controls button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .test-controls button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .size-btn {
+            background: #667eea;
+            color: white;
+        }
+        
+        .run-btn {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .reset-btn {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .preview-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .preview-frame {
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: width 0.3s ease, height 0.3s ease;
+            background: white;
+        }
+        
+        .preview-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .size-info {
+            text-align: center;
+            padding: 10px;
+            background: #16213e;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .test-results {
+            background: #16213e;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .test-results h2 {
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .test-case {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background: #1a1a2e;
+            border-left: 4px solid #667eea;
+        }
+        
+        .test-case.pass {
+            border-left-color: #27ae60;
+        }
+        
+        .test-case.fail {
+            border-left-color: #e74c3c;
+        }
+        
+        .test-case.pending {
+            border-left-color: #f39c12;
+        }
+        
+        .test-case h3 {
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .test-case p {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .status.pass {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .status.fail {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .status.pending {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .test-summary {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #1a1a2e;
+            border-radius: 5px;
+        }
+        
+        .summary-item {
+            text-align: center;
+        }
+        
+        .summary-item .count {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .summary-item.passed .count { color: #27ae60; }
+        .summary-item.failed .count { color: #e74c3c; }
+        .summary-item.pending .count { color: #f39c12; }
+        
+        .checklist {
+            margin-top: 20px;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #1a1a2e;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🖥️ Responsive Test Suite</h1>
+    
+    <div class="test-controls">
+        <button class="size-btn" onclick="setSize(320, 568)">iPhone SE (320×568)</button>
+        <button class="size-btn" onclick="setSize(360, 640)">Galaxy Note II (360×640)</button>
+        <button class="size-btn" onclick="setSize(375, 667)">iPhone 6/7/8 (375×667)</button>
+        <button class="size-btn" onclick="setSize(390, 844)">iPhone 12/13 (390×844)</button>
+        <button class="size-btn" onclick="setSize(414, 896)">iPhone XR/11 (414×896)</button>
+        <button class="size-btn" onclick="setSize(768, 1024)">iPad (768×1024)</button>
+        <button class="size-btn" onclick="setSize(1024, 768)">iPad Landscape (1024×768)</button>
+        <button class="size-btn" onclick="setSize(1280, 800)">Laptop (1280×800)</button>
+        <button class="size-btn" onclick="setSize(1440, 900)">Desktop (1440×900)</button>
+        <button class="size-btn" onclick="setSize(1920, 1080)">Full HD (1920×1080)</button>
+        <button class="run-btn" onclick="runAllTests()">▶️ Run All Tests</button>
+        <button class="reset-btn" onclick="resetTests()">🔄 Reset</button>
+    </div>
+    
+    <div class="size-info">
+        <strong>Current Size:</strong> <span id="currentSize">1280 × 800</span> | 
+        <strong>Device Type:</strong> <span id="deviceType">Laptop</span>
+    </div>
+    
+    <div class="preview-container">
+        <div class="preview-frame" id="previewFrame" style="width: 1280px; height: 800px;">
+            <iframe id="sitePreview" src="../index.html"></iframe>
+        </div>
+    </div>
+    
+    <div class="test-results">
+        <h2>📋 Test Results</h2>
+        
+        <div class="test-summary">
+            <div class="summary-item passed">
+                <div class="count" id="passedCount">0</div>
+                <div>Passed</div>
+            </div>
+            <div class="summary-item failed">
+                <div class="count" id="failedCount">0</div>
+                <div>Failed</div>
+            </div>
+            <div class="summary-item pending">
+                <div class="count" id="pendingCount">0</div>
+                <div>Pending</div>
+            </div>
+        </div>
+        
+        <div id="testCases"></div>
+    </div>
+    
+    <div class="test-results checklist">
+        <h2>✅ Manual Verification Checklist</h2>
+        <div id="manualChecklist"></div>
+    </div>
+
+    <script>
+        // Screen size breakpoints
+        const breakpoints = {
+            mobile: 480,
+            mobileLg: 767,
+            tablet: 991,
+            laptop: 1399,
+            desktop: 1920
+        };
+
+        // Test cases definition
+        const testCases = [
+            // Navbar Tests
+            {
+                id: 'nav-1',
+                category: 'Navbar',
+                name: 'Navbar displays hamburger menu on mobile',
+                description: 'On screens ≤991px, the navbar should show a hamburger toggle button instead of expanded menu',
+                checkFn: (width) => width <= 991,
+                manualCheck: true
+            },
+            {
+                id: 'nav-2',
+                category: 'Navbar',
+                name: 'Navbar menu items fit in single line on desktop',
+                description: 'On screens >991px, all navbar menu items should fit in a single line without wrapping',
+                checkFn: (width) => width > 991,
+                manualCheck: true
+            },
+            {
+                id: 'nav-3',
+                category: 'Navbar',
+                name: 'Navbar is fixed at top',
+                description: 'Navbar should remain fixed at the top when scrolling on all screen sizes',
+                checkFn: () => true,
+                manualCheck: true
+            },
+            {
+                id: 'nav-4',
+                category: 'Navbar',
+                name: 'Dropdown menus work correctly',
+                description: 'Family Medicine, Dental, Other Courses, and Gallery & Feedback dropdowns should open/close properly',
+                checkFn: () => true,
+                manualCheck: true
+            },
+            {
+                id: 'nav-5',
+                category: 'Navbar',
+                name: 'Mobile menu expands/collapses',
+                description: 'On mobile, clicking hamburger should expand/collapse the full menu',
+                checkFn: (width) => width <= 991,
+                manualCheck: true
+            },
+            
+            // Hero Section Tests
+            {
+                id: 'hero-1',
+                category: 'Hero Section',
+                name: 'Hero text is readable on mobile',
+                description: 'Hero section title and subtitle should be properly sized and readable on mobile screens',
+                checkFn: (width) => width <= 767,
+                manualCheck: true
+            },
+            {
+                id: 'hero-2',
+                category: 'Hero Section',
+                name: 'Hero CTA buttons are accessible',
+                description: 'Call-to-action buttons in hero section should be tappable on mobile (min 44px touch target)',
+                checkFn: () => true,
+                manualCheck: true
+            },
+            
+            // Course Cards Tests
+            {
+                id: 'cards-1',
+                category: 'Course Cards',
+                name: 'Cards stack vertically on mobile',
+                description: 'Course cards should stack in a single column on mobile screens (≤575px)',
+                checkFn: (width) => width <= 575,
+                manualCheck: true
+            },
+            {
+                id: 'cards-2',
+                category: 'Course Cards',
+                name: 'Cards display in 2 columns on tablet',
+                description: 'Course cards should display in 2 columns on tablet screens (576px-991px)',
+                checkFn: (width) => width > 575 && width <= 991,
+                manualCheck: true
+            },
+            {
+                id: 'cards-3',
+                category: 'Course Cards',
+                name: 'Card content does not overflow',
+                description: 'Text content within course cards should not overflow or be cut off',
+                checkFn: () => true,
+                manualCheck: true
+            },
+            
+            // Gallery Section Tests
+            {
+                id: 'gallery-1',
+                category: 'Gallery',
+                name: 'Gallery images display correctly',
+                description: 'Gallery images should maintain aspect ratio and display properly on all screens',
+                checkFn: () => true,
+                manualCheck: true
+            },
+            {
+                id: 'gallery-2',
+                category: 'Gallery',
+                name: 'Year filter buttons are scrollable on mobile',
+                description: 'Gallery year filter buttons should be horizontally scrollable on small screens',
+                checkFn: (width) => width <= 767,
+                manualCheck: true
+            },
+            {
+                id: 'gallery-3',
+                category: 'Gallery',
+                name: 'Lightbox works on mobile',
+                description: 'Clicking a gallery image should open lightbox and navigation should work on mobile',
+                checkFn: () => true,
+                manualCheck: true
+            },
+            
+            // Testimonials Section Tests
+            {
+                id: 'testimonials-1',
+                category: 'Testimonials',
+                name: 'Testimonial cards are visible on mobile',
+                description: 'Testimonial section title and cards should be visible within mobile viewport',
+                checkFn: (width) => width <= 480,
+                manualCheck: true
+            },
+            {
+                id: 'testimonials-2',
+                category: 'Testimonials',
+                name: 'Testimonial carousel is swipeable',
+                description: 'Users should be able to swipe/scroll through testimonial cards on touch devices',
+                checkFn: () => true,
+                manualCheck: true
+            },
+            {
+                id: 'testimonials-3',
+                category: 'Testimonials',
+                name: 'Navigation arrows work',
+                description: 'Left/right navigation arrows should scroll through testimonials correctly',
+                checkFn: () => true,
+                manualCheck: true
+            },
+            
+            // Contact Section Tests
+            {
+                id: 'contact-1',
+                category: 'Contact',
+                name: 'Contact form is usable on mobile',
+                description: 'Contact form fields should be properly sized and usable on mobile screens',
+                checkFn: (width) => width <= 767,
+                manualCheck: true
+            },
+            {
+                id: 'contact-2',
+                category: 'Contact',
+                name: 'Map displays correctly',
+                description: 'Embedded map (if any) should display and be interactive on all screen sizes',
+                checkFn: () => true,
+                manualCheck: true
+            },
+            
+            // General Layout Tests
+            {
+                id: 'layout-1',
+                category: 'Layout',
+                name: 'No horizontal scroll on mobile',
+                description: 'Page should not have horizontal scrollbar on mobile devices',
+                checkFn: (width) => width <= 767,
+                manualCheck: true
+            },
+            {
+                id: 'layout-2',
+                category: 'Layout',
+                name: 'Section padding adjusts for mobile',
+                description: 'Section padding should be reduced appropriately on smaller screens',
+                checkFn: () => true,
+                manualCheck: true
+            },
+            {
+                id: 'layout-3',
+                category: 'Layout',
+                name: 'Text is readable without zooming',
+                description: 'All text should be at least 16px on mobile for readability without zooming',
+                checkFn: (width) => width <= 480,
+                manualCheck: true
+            },
+            {
+                id: 'layout-4',
+                category: 'Layout',
+                name: 'Buttons have adequate touch targets',
+                description: 'All interactive elements should have minimum 44×44px touch target on mobile',
+                checkFn: (width) => width <= 767,
+                manualCheck: true
+            },
+            
+            // Video Tests
+            {
+                id: 'video-1',
+                category: 'Videos',
+                name: 'Embedded videos are responsive',
+                description: 'Video embeds (YouTube/Vimeo) should scale properly and maintain 16:9 ratio',
+                checkFn: () => true,
+                manualCheck: true
+            },
+            
+            // Alert Tests
+            {
+                id: 'alert-1',
+                category: 'Alerts',
+                name: 'Alert boxes are readable on mobile',
+                description: 'Information/warning alerts in course sections should be fully readable on mobile',
+                checkFn: (width) => width <= 575,
+                manualCheck: true
+            }
+        ];
+
+        // Manual checklist items
+        const manualChecklistItems = [
+            'Navbar hamburger menu toggles correctly on mobile',
+            'All dropdown menus open/close properly',
+            'Navbar menu items don\'t wrap to multiple lines on desktop',
+            'Hero section displays properly with readable text',
+            'Course cards maintain proper layout at each breakpoint',
+            'Gallery filter buttons scroll horizontally on mobile',
+            'Gallery lightbox opens and closes correctly',
+            'Testimonial carousel can be swiped on touch devices',
+            'Testimonial navigation arrows function correctly',
+            'No content overflows or gets cut off',
+            'No horizontal scrolling on any mobile view',
+            'All buttons and links are easily tappable',
+            'Forms are usable with mobile keyboard',
+            'Videos maintain aspect ratio and are playable',
+            'Page loads without layout shifts'
+        ];
+
+        let currentWidth = 1280;
+        let currentHeight = 800;
+        let testResults = {};
+
+        function setSize(width, height) {
+            currentWidth = width;
+            currentHeight = height;
+            
+            const frame = document.getElementById('previewFrame');
+            frame.style.width = Math.min(width, window.innerWidth - 60) + 'px';
+            frame.style.height = Math.min(height, 700) + 'px';
+            
+            document.getElementById('currentSize').textContent = `${width} × ${height}`;
+            document.getElementById('deviceType').textContent = getDeviceType(width);
+            
+            // Reload iframe to apply new viewport
+            const iframe = document.getElementById('sitePreview');
+            iframe.style.width = width + 'px';
+            iframe.style.height = height + 'px';
+            iframe.style.transform = `scale(${Math.min(1, (window.innerWidth - 60) / width)})`;
+            iframe.style.transformOrigin = 'top left';
+        }
+
+        function getDeviceType(width) {
+            if (width <= breakpoints.mobile) return 'Small Mobile';
+            if (width <= breakpoints.mobileLg) return 'Mobile';
+            if (width <= breakpoints.tablet) return 'Tablet';
+            if (width <= breakpoints.laptop) return 'Laptop';
+            return 'Desktop';
+        }
+
+        function runAllTests() {
+            const testCasesContainer = document.getElementById('testCases');
+            testCasesContainer.innerHTML = '';
+            
+            let passed = 0, failed = 0, pending = 0;
+            
+            // Group tests by category
+            const categories = {};
+            testCases.forEach(test => {
+                if (!categories[test.category]) {
+                    categories[test.category] = [];
+                }
+                categories[test.category].push(test);
+            });
+            
+            // Render tests by category
+            Object.keys(categories).forEach(category => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.innerHTML = `<h3 style="margin: 20px 0 10px; color: #667eea;">${category}</h3>`;
+                testCasesContainer.appendChild(categoryDiv);
+                
+                categories[category].forEach(test => {
+                    const isApplicable = test.checkFn(currentWidth);
+                    let status = 'pending';
+                    
+                    if (test.manualCheck) {
+                        if (testResults[test.id] !== undefined) {
+                            status = testResults[test.id] ? 'pass' : 'fail';
+                        }
+                    }
+                    
+                    if (status === 'pass') passed++;
+                    else if (status === 'fail') failed++;
+                    else pending++;
+                    
+                    const testDiv = document.createElement('div');
+                    testDiv.className = `test-case ${status}`;
+                    testDiv.innerHTML = `
+                        <h3>
+                            ${test.name}
+                            <span class="status ${status}">${status.toUpperCase()}</span>
+                            ${isApplicable ? '<span style="color: #27ae60; font-size: 0.8rem;"> (Applicable at this size)</span>' : '<span style="color: #888; font-size: 0.8rem;"> (Not applicable at this size)</span>'}
+                        </h3>
+                        <p>${test.description}</p>
+                        ${test.manualCheck ? `
+                            <div style="margin-top: 10px;">
+                                <button onclick="markTest('${test.id}', true)" style="padding: 5px 15px; background: #27ae60; color: white; border: none; border-radius: 3px; cursor: pointer; margin-right: 5px;">✓ Pass</button>
+                                <button onclick="markTest('${test.id}', false)" style="padding: 5px 15px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer;">✗ Fail</button>
+                            </div>
+                        ` : ''}
+                    `;
+                    testCasesContainer.appendChild(testDiv);
+                });
+            });
+            
+            document.getElementById('passedCount').textContent = passed;
+            document.getElementById('failedCount').textContent = failed;
+            document.getElementById('pendingCount').textContent = pending;
+        }
+
+        function markTest(testId, passed) {
+            testResults[testId] = passed;
+            runAllTests();
+        }
+
+        function resetTests() {
+            testResults = {};
+            runAllTests();
+            
+            // Reset checkboxes
+            document.querySelectorAll('.checklist-item input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+        }
+
+        function initManualChecklist() {
+            const container = document.getElementById('manualChecklist');
+            manualChecklistItems.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'checklist-item';
+                div.innerHTML = `
+                    <input type="checkbox" id="check-${index}">
+                    <label for="check-${index}">${item}</label>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setSize(1280, 800);
+            runAllTests();
+            initManualChecklist();
+        });
+    </script>
+</body>
+</html>
