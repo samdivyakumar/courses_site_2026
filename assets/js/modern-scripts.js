@@ -119,12 +119,42 @@
                 
                 if (target) {
                     e.preventDefault();
-                    const offsetTop = target.offsetTop - 70; // Account for fixed navbar
                     
-                    window.scrollTo({
-                        top: offsetTop,
-                        behavior: 'smooth'
-                    });
+                    // Check if mobile menu is open
+                    const navbarCollapse = document.querySelector('.navbar-collapse');
+                    const isMobileMenuOpen = navbarCollapse && navbarCollapse.classList.contains('show') && window.innerWidth < 992;
+                    
+                    if (isMobileMenuOpen) {
+                        // First, remove body scroll lock without restoring position
+                        document.body.classList.remove('menu-open');
+                        document.body.style.top = '';
+                        
+                        // Mark that we're navigating (to prevent position restore)
+                        document.body.dataset.isNavigating = 'true';
+                        
+                        // Close the navbar
+                        const navbarToggler = document.querySelector('.navbar-toggler');
+                        if (navbarToggler) {
+                            navbarToggler.click();
+                        }
+                        
+                        // Scroll to target after a small delay to allow menu to close
+                        setTimeout(function() {
+                            const offsetTop = target.offsetTop - 70;
+                            window.scrollTo({
+                                top: offsetTop,
+                                behavior: 'smooth'
+                            });
+                            // Clear navigation flag
+                            delete document.body.dataset.isNavigating;
+                        }, 100);
+                    } else {
+                        const offsetTop = target.offsetTop - 70; // Account for fixed navbar
+                        window.scrollTo({
+                            top: offsetTop,
+                            behavior: 'smooth'
+                        });
+                    }
                 }
             });
         });
@@ -140,17 +170,93 @@
         
         if (!navbarToggler || !navbarCollapse) return;
 
+        // Toggle body scroll when menu is opened/closed
+        function toggleBodyScroll(isOpen) {
+            if (isOpen) {
+                document.body.classList.add('menu-open');
+                // Store current scroll position
+                document.body.dataset.scrollPosition = window.pageYOffset;
+                document.body.style.top = `-${window.pageYOffset}px`;
+            } else {
+                document.body.classList.remove('menu-open');
+                document.body.style.top = '';
+                // Only restore scroll position if not navigating
+                if (document.body.dataset.isNavigating !== 'true') {
+                    const scrollPosition = document.body.dataset.scrollPosition || 0;
+                    window.scrollTo(0, parseInt(scrollPosition));
+                }
+            }
+        }
+
+        // Listen for Bootstrap collapse events
+        navbarCollapse.addEventListener('show.bs.collapse', function() {
+            if (window.innerWidth < 992) {
+                toggleBodyScroll(true);
+            }
+        });
+
+        navbarCollapse.addEventListener('hide.bs.collapse', function() {
+            toggleBodyScroll(false);
+        });
+
+        // Also handle the case when the collapse is already shown
+        navbarCollapse.addEventListener('shown.bs.collapse', function() {
+            if (window.innerWidth < 992) {
+                // Ensure scrolling works within the menu
+                navbarCollapse.style.overscrollBehavior = 'contain';
+            }
+        });
+
+        // Prevent touch events on the navbar collapse from scrolling the page
+        navbarCollapse.addEventListener('touchmove', function(e) {
+            if (window.innerWidth < 992 && navbarCollapse.classList.contains('show')) {
+                const scrollTop = navbarCollapse.scrollTop;
+                const scrollHeight = navbarCollapse.scrollHeight;
+                const height = navbarCollapse.clientHeight;
+                
+                // Allow scrolling within the menu
+                if (scrollHeight > height) {
+                    e.stopPropagation();
+                } else {
+                    // If content doesn't need scrolling, prevent default
+                    e.preventDefault();
+                }
+            }
+        }, { passive: false });
+
+        // Note: Navigation and menu closing is now handled in initSmoothScroll
+        // This handler is only for non-anchor links
         navLinks.forEach(function(link) {
             link.addEventListener('click', function(e) {
-                // Only close navbar for non-dropdown links and dropdown items
+                const href = this.getAttribute('href');
+                
+                // Skip anchor links - they're handled by initSmoothScroll
+                if (href && href.startsWith('#') && href !== '#') {
+                    return;
+                }
+                
+                // For non-anchor links, just close the menu
                 if (window.innerWidth < 992 && navbarCollapse.classList.contains('show')) {
-                    // Don't close if it's a dropdown toggle
                     if (!this.classList.contains('dropdown-toggle')) {
+                        // Remove body scroll lock
+                        document.body.classList.remove('menu-open');
+                        document.body.style.top = '';
                         navbarToggler.click();
                     }
                 }
             });
         });
+
+        // Handle window resize - close menu and restore scroll if resized to desktop
+        window.addEventListener('resize', debounce(function() {
+            if (window.innerWidth >= 992 && document.body.classList.contains('menu-open')) {
+                toggleBodyScroll(false);
+                // Also close the collapse if it's open
+                if (navbarCollapse.classList.contains('show')) {
+                    navbarToggler.click();
+                }
+            }
+        }, 250));
     }
 
     /**
