@@ -1300,7 +1300,7 @@ body.lightbox-open {
 }
 
 .testimonials-section .section-title {
-    padding-top: 40px;
+    padding-top: 20px;
     color: #ffffff;
 }
 
@@ -1675,17 +1675,29 @@ body.lightbox-open {
 /* Mobile */
 @media (max-width: 767px) {
     .testimonials-section {
-        padding: 50px 0;
+        padding: 30px 0;
+    }
+
+    .testimonials-section .section-title {
+        padding-top: 10px;
+    }
+
+    .testimonials-section .mb-5 {
+        margin-bottom: 1rem !important;
     }
 
     .testimonials-main-title {
         font-size: 1.6rem;
-        margin-bottom: 35px;
+        margin-bottom: 20px;
         padding: 0 20px;
     }
 
+    .testimonials-carousel-container {
+        padding: 10px 0;
+    }
+
     .testimonials-slider {
-        padding: 30px calc(50% - 130px);
+        padding: 15px calc(50% - 130px);
         gap: 12px;
     }
 
@@ -1769,8 +1781,16 @@ body.lightbox-open {
 
 /* Small Mobile */
 @media (max-width: 480px) {
+    .testimonials-section {
+        padding: 20px 0;
+    }
+
+    .testimonials-section .section-title {
+        padding-top: 5px;
+    }
+
     .testimonials-slider {
-        padding: 25px calc(50% - 115px);
+        padding: 10px calc(50% - 115px);
         gap: 10px;
     }
 
