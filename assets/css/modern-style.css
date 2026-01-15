@@ -518,6 +518,14 @@ html {
     animation-delay: 1.0s;
 }
 
+.hero-section .animate-fade-in:nth-of-type(6) {
+    animation-delay: 1.2s;
+}
+
+.hero-section .animate-fade-in:nth-of-type(7) {
+    animation-delay: 1.4s;
+}
+
 .hero-section .btn-custom {
     transition: all 0.3s ease;
     position: relative;
