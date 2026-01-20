@@ -88,6 +88,19 @@ html {
     color: var(--light-bg) !important;
 }
 
+.dropdown-item.active, .dropdown-item:active {
+    /*color: #000;
+    text-decoration: none;
+    background-color: #2C74B3;*/
+    background-color: #FFF;
+    color: #000 !important;
+}
+
+.dropdown-item.active:hover, .dropdown-item:active:hover {
+    background-color: #2C74B3;
+    color: var(--light-bg) !important;
+}
+
 .dropdown-header {
     color: var(--primary-color);
     font-weight: 600;
