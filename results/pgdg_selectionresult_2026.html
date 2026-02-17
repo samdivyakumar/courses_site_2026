@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selected Candidates List - PGDG 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #04274B;
+            --primary-light: #0a4a8a;
+            --secondary-color: #5ea6db;
+            --accent-color: #00c9a7;
+            --gradient-start: #04274B;
+            --gradient-end: #0a5a9e;
+            --success-color: #28a745;
+            --background-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a5568;
+            --border-radius: 16px;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--background-color) 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            color: white;
+            text-align: center;
+            padding: 3rem 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        header > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(1.75rem, 5vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.5px;
+        }
+
+        header h2 {
+            font-size: clamp(1rem, 3vw, 1.35rem);
+            font-weight: 400;
+            opacity: 0.95;
+            margin-bottom: 0.5rem;
+        }
+
+        header h3 {
+            font-size: clamp(0.9rem, 2.5vw, 1.15rem);
+            font-weight: 500;
+            background: linear-gradient(90deg, var(--accent-color), #4fd1c5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Announcement Banner */
+        .announcement {
+            background: linear-gradient(90deg, var(--secondary-color) 0%, #7ec8e3 50%, var(--secondary-color) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+            color: white;
+            padding: 1.25rem 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .announcement h3 {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .announcement strong {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            margin-right: 0.5rem;
+        }
+
+        .announcement strong::before {
+            content: '📢';
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stats Badge */
+        .stats-badge {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Table Styles */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.95rem;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            font-weight: 600;
+            padding: 1rem 1.25rem;
+            text-align: left;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        th:first-child {
+            border-radius: 12px 0 0 0;
+        }
+
+        th:last-child {
+            border-radius: 0 12px 0 0;
+        }
+
+        td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: white;
+            transition: var(--transition);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:last-child td:first-child {
+            border-radius: 0 0 0 12px;
+        }
+
+        tr:last-child td:last-child {
+            border-radius: 0 0 12px 0;
+        }
+
+        tbody tr {
+            transition: var(--transition);
+        }
+
+        tbody tr:hover {
+            transform: scale(1.01);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            z-index: 1;
+        }
+
+        tbody tr:hover td {
+            background: linear-gradient(90deg, #f8fafc, #f1f5f9);
+        }
+
+        tbody tr:nth-child(even) td {
+            background: #f8fafc;
+        }
+
+        tbody tr:nth-child(even):hover td {
+            background: linear-gradient(90deg, #f1f5f9, #e2e8f0);
+        }
+
+        /* Application number styling */
+        td:first-child {
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-weight: 500;
+            color: var(--primary-color);
+            white-space: nowrap;
+        }
+
+        /* Candidate name styling */
+        td:last-child {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Note Section */
+        .note-section {
+            text-align: center;
+            margin: 2rem 1rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: var(--border-radius);
+            border-left: 4px solid #f59e0b;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .note-section h3 {
+            color: #92400e;
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .note-section h3::before {
+            content: '📧';
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: 2rem;
+        }
+
+        footer p {
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        footer p:first-child {
+            font-weight: 500;
+        }
+
+        footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        footer a:hover {
+            color: #4fd1c5;
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                padding: 2rem 1rem;
+            }
+
+            .container {
+                margin: 1rem;
+                padding: 1rem;
+                border-radius: 12px;
+            }
+
+            .table-wrapper {
+                margin: 0 -0.5rem;
+                border-radius: 8px;
+            }
+
+            th, td {
+                padding: 0.75rem 0.85rem;
+                font-size: 0.85rem;
+            }
+
+            th {
+                font-size: 0.7rem;
+            }
+
+            .stat-item {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            .announcement h3 {
+                font-size: 0.85rem;
+            }
+
+            .announcement strong {
+                display: block;
+                margin-bottom: 0.5rem;
+            }
+
+            /* Card-style layout for mobile */
+            .table-wrapper {
+                overflow: visible;
+            }
+
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            tr {
+                margin-bottom: 1rem;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: var(--shadow-sm);
+            }
+
+            td {
+                position: relative;
+                padding: 1rem 1rem 1rem 45%;
+                text-align: right;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 1rem;
+                width: 40%;
+                text-align: left;
+                font-weight: 600;
+                color: var(--text-secondary);
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            /* Reset alternating row styles for mobile cards */
+            tbody tr:nth-child(even) td,
+            tbody tr:nth-child(odd) td {
+                background: white;
+            }
+
+            tbody tr:nth-child(even):hover td,
+            tbody tr:nth-child(odd):hover td {
+                background: white;
+            }
+
+            td:first-child,
+            tbody tr:nth-child(even) td:first-child,
+            tbody tr:nth-child(odd) td:first-child {
+                background: linear-gradient(135deg, var(--primary-color), var(--primary-light)) !important;
+                color: white;
+                border-radius: 12px 12px 0 0;
+            }
+
+            td:first-child::before {
+                color: rgba(255, 255, 255, 0.8);
+            }
+
+            td:last-child,
+            tbody tr:nth-child(even) td:last-child,
+            tbody tr:nth-child(odd) td:last-child {
+                border-radius: 0 0 12px 12px;
+                border-bottom: none;
+            }
+
+            tbody tr:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
+            }
+
+            .stats-badge {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .note-section {
+                margin: 1.5rem 0.5rem;
+                padding: 1rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            header {
+                background: var(--primary-color) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .container {
+                box-shadow: none;
+                margin: 0;
+            }
+
+            tbody tr:hover {
+                transform: none;
+            }
+
+            footer {
+                background: #333 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Focus styles for keyboard navigation */
+        a:focus, button:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            :root {
+                --shadow-sm: 0 0 0 1px #000;
+                --shadow-md: 0 0 0 2px #000;
+            }
+
+            th, td {
+                border: 2px solid #000;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Christian Medical College, Vellore</h1>
+        <h2>Department of Geriatrics and Distance Education Unit</h2>
+        <h3>POST GRADUATE DIPLOMA IN GERIATRICS</h3>
+    </header>
+
+    <div class="announcement">
+        <h3><strong>Announcement:</strong> We are pleased to announce the list of selected candidates for PGDG Course Batch-2026, February 17<sup>th</sup>, 2026.</h3>
+    </div>
+
+    <div class="container">
+        <div class="stats-badge">
+            <span class="stat-item">✓ 50 Candidates Selected</span>
+            <span class="stat-item">📅 Batch 2026</span>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Application Number</th>
+                        <th>Name of Candidate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="Application No.">200-PGDGApp-2026</td><td data-label="Candidate Name">Abhishek Kumar Singh</td></tr>
+                    <tr><td data-label="Application No.">114-PGDGApp-2026</td><td data-label="Candidate Name">Akshay Jacob</td></tr>
+                    <tr><td data-label="Application No.">216-PGDGApp-2026</td><td data-label="Candidate Name">Akuthota Srinivasa Reddy</td></tr>
+                    <tr><td data-label="Application No.">235-PGDGApp-2026</td><td data-label="Candidate Name">Asha Elizabeth Mathew</td></tr>
+                    <tr><td data-label="Application No.">259-PGDGApp-2026</td><td data-label="Candidate Name">Ashok R</td></tr>
+                    <tr><td data-label="Application No.">41-PGDGApp-2026</td><td data-label="Candidate Name">Ashwathi G</td></tr>
+                    <tr><td data-label="Application No.">117-PGDGApp-2026</td><td data-label="Candidate Name">Balaganesh Kandhavel</td></tr>
+                    <tr><td data-label="Application No.">366-PGDGApp-2026</td><td data-label="Candidate Name">Basith Ahamed N M</td></tr>
+                    <tr><td data-label="Application No.">204-PGDGApp-2026</td><td data-label="Candidate Name">Chinnababu Kelli</td></tr>
+                    <tr><td data-label="Application No.">119-PGDGApp-2026</td><td data-label="Candidate Name">Cicil Pappachen</td></tr>
+                    <tr><td data-label="Application No.">328-PGDGApp-2026</td><td data-label="Candidate Name">Costantia Dovita S</td></tr>
+                    <tr><td data-label="Application No.">190-PGDGApp-2026</td><td data-label="Candidate Name">David Sydney Joy</td></tr>
+                    <tr><td data-label="Application No.">38-PGDGApp-2026</td><td data-label="Candidate Name">Dhameliya Priyanka Pravinchandra</td></tr>
+                    <tr><td data-label="Application No.">291-PGDGApp-2026</td><td data-label="Candidate Name">Dinesh Velu</td></tr>
+                    <tr><td data-label="Application No.">318-PGDGApp-2026</td><td data-label="Candidate Name">Divya T</td></tr>
+                    <tr><td data-label="Application No.">179-PGDGApp-2026</td><td data-label="Candidate Name">Gavhad Dhananjay Deorao</td></tr>
+                    <tr><td data-label="Application No.">177-PGDGApp-2026</td><td data-label="Candidate Name">Gowtham Vijay M</td></tr>
+                    <tr><td data-label="Application No.">157-PGDGApp-2026</td><td data-label="Candidate Name">Grishma Shrestha</td></tr>
+                    <tr><td data-label="Application No.">252-PGDGApp-2026</td><td data-label="Candidate Name">Hamza Mm</td></tr>
+                    <tr><td data-label="Application No.">239-PGDGApp-2026</td><td data-label="Candidate Name">I.C.Vignesh Raja</td></tr>
+                    <tr><td data-label="Application No.">207-PGDGApp-2026</td><td data-label="Candidate Name">Irfan Pathan</td></tr>
+                    <tr><td data-label="Application No.">284-PGDGApp-2026</td><td data-label="Candidate Name">Ittyara Paul Vadassery</td></tr>
+                    <tr><td data-label="Application No.">115-PGDGApp-2026</td><td data-label="Candidate Name">Joseph Ravindra Duddu</td></tr>
+                    <tr><td data-label="Application No.">171-PGDGApp-2026</td><td data-label="Candidate Name">Kalyaanasundhary S</td></tr>
+                    <tr><td data-label="Application No.">139-PGDGApp-2026</td><td data-label="Candidate Name">Kardale Pooja Dashrath</td></tr>
+                    <tr><td data-label="Application No.">203-PGDGApp-2026</td><td data-label="Candidate Name">Kezhaletuo Kire</td></tr>
+                    <tr><td data-label="Application No.">24-PGDGApp-2026</td><td data-label="Candidate Name">Maria Varghese</td></tr>
+                    <tr><td data-label="Application No.">74-PGDGApp-2026</td><td data-label="Candidate Name">Medagani Varun Kumar</td></tr>
+                    <tr><td data-label="Application No.">184-PGDGApp-2026</td><td data-label="Candidate Name">Mohit Bhardwaj</td></tr>
+                    <tr><td data-label="Application No.">277-PGDGApp-2026</td><td data-label="Candidate Name">Nandan Mishra</td></tr>
+                    <tr><td data-label="Application No.">46-PGDGApp-2026</td><td data-label="Candidate Name">Neelmani</td></tr>
+                    <tr><td data-label="Application No.">34-PGDGApp-2026</td><td data-label="Candidate Name">Nishanth J</td></tr>
+                    <tr><td data-label="Application No.">193-PGDGApp-2026</td><td data-label="Candidate Name">Pooja Bharat Jariwala</td></tr>
+                    <tr><td data-label="Application No.">121-PGDGApp-2026</td><td data-label="Candidate Name">Pranami Shikha Bharali</td></tr>
+                    <tr><td data-label="Application No.">268-PGDGApp-2026</td><td data-label="Candidate Name">Praveena R</td></tr>
+                    <tr><td data-label="Application No.">15-PGDGApp-2026</td><td data-label="Candidate Name">Ramayah Jayamurugesan Jayendhran</td></tr>
+                    <tr><td data-label="Application No.">68-PGDGApp-2026</td><td data-label="Candidate Name">Rishikesh Kumar</td></tr>
+                    <tr><td data-label="Application No.">309-PGDGApp-2026</td><td data-label="Candidate Name">Ritu</td></tr>
+                    <tr><td data-label="Application No.">181-PGDGApp-2026</td><td data-label="Candidate Name">S Niranjana</td></tr>
+                    <tr><td data-label="Application No.">89-PGDGApp-2026</td><td data-label="Candidate Name">Safeeda Ek</td></tr>
+                    <tr><td data-label="Application No.">100-PGDGApp-2026</td><td data-label="Candidate Name">Samanasi Chaithanya Ram</td></tr>
+                    <tr><td data-label="Application No.">272-PGDGApp-2026</td><td data-label="Candidate Name">Sameer Mohan Agarwal</td></tr>
+                    <tr><td data-label="Application No.">234-PGDGApp-2026</td><td data-label="Candidate Name">Saranya Manikkam</td></tr>
+                    <tr><td data-label="Application No.">135-PGDGApp-2026</td><td data-label="Candidate Name">Savitha Manavalan</td></tr>
+                    <tr><td data-label="Application No.">172-PGDGApp-2026</td><td data-label="Candidate Name">Shalini Garg</td></tr>
+                    <tr><td data-label="Application No.">176-PGDGApp-2026</td><td data-label="Candidate Name">Shreedevi Kamaraddi</td></tr>
+                    <tr><td data-label="Application No.">187-PGDGApp-2026</td><td data-label="Candidate Name">Srijana Pradhan</td></tr>
+                    <tr><td data-label="Application No.">356-PGDGApp-2026</td><td data-label="Candidate Name">Vajja Swathi</td></tr>
+                    <tr><td data-label="Application No.">250-PGDGApp-2026</td><td data-label="Candidate Name">Vipin Christopher</td></tr>
+                    <tr><td data-label="Application No.">194-PGDGApp-2026</td><td data-label="Candidate Name">Vishnu B S</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="note-section">
+        <h3>NOTE: The selected candidates will receive an intimation email with all relevant details.</h3>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Distance Education Unit, CMC Vellore. All rights reserved.</p>
+        <p>Email: <a href="mailto:info@cmcdistedu.org">info@cmcdistedu.org</a></p>
+    </footer>
+</body>
+</html>
