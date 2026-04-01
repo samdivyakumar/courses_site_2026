@@ -314,6 +314,9 @@ html {
     position: relative;
     overflow: hidden;
     margin-top: 70px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
 }
 
 /* Animated gradient overlay */
@@ -936,6 +939,7 @@ footer a:hover {
 @media (max-width: 768px) {
     .hero-section {
         padding: 100px 0 60px;
+        min-height: auto;
     }
     
     section {
