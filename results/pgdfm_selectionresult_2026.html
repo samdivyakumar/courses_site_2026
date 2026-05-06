@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selected Candidates List - PGDFM 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #04274B;
+            --primary-light: #0a4a8a;
+            --secondary-color: #5ea6db;
+            --accent-color: #00c9a7;
+            --gradient-start: #04274B;
+            --gradient-end: #0a5a9e;
+            --success-color: #28a745;
+            --background-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a5568;
+            --border-radius: 16px;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--background-color) 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            color: white;
+            text-align: center;
+            padding: 3rem 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        header > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(1.75rem, 5vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.5px;
+        }
+
+        header h2 {
+            font-size: clamp(1rem, 3vw, 1.35rem);
+            font-weight: 400;
+            opacity: 0.95;
+            margin-bottom: 0.5rem;
+        }
+
+        header h3 {
+            font-size: clamp(0.9rem, 2.5vw, 1.15rem);
+            font-weight: 500;
+            background: linear-gradient(90deg, var(--accent-color), #4fd1c5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Announcement Banner */
+        .announcement {
+            background: linear-gradient(90deg, var(--secondary-color) 0%, #7ec8e3 50%, var(--secondary-color) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+            color: white;
+            padding: 1.25rem 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .announcement h3 {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .announcement strong {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            margin-right: 0.5rem;
+        }
+
+        .announcement strong::before {
+            content: '📢';
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stats Badge */
+        .stats-badge {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Table Styles */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.95rem;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            font-weight: 600;
+            padding: 1rem 1.25rem;
+            text-align: left;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        th:first-child {
+            border-radius: 12px 0 0 0;
+        }
+
+        th:last-child {
+            border-radius: 0 12px 0 0;
+        }
+
+        td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: white;
+            transition: var(--transition);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:last-child td:first-child {
+            border-radius: 0 0 0 12px;
+        }
+
+        tr:last-child td:last-child {
+            border-radius: 0 0 12px 0;
+        }
+
+        tbody tr {
+            transition: var(--transition);
+        }
+
+        tbody tr:hover {
+            transform: scale(1.01);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            z-index: 1;
+        }
+
+        tbody tr:hover td {
+            background: linear-gradient(90deg, #f8fafc, #f1f5f9);
+        }
+
+        tbody tr:nth-child(even) td {
+            background: #f8fafc;
+        }
+
+        tbody tr:nth-child(even):hover td {
+            background: linear-gradient(90deg, #f1f5f9, #e2e8f0);
+        }
+
+        /* Application number styling */
+        td:first-child {
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-weight: 500;
+            color: var(--primary-color);
+            white-space: nowrap;
+        }
+
+        /* Candidate name styling */
+        td:last-child {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Note Section */
+        .note-section {
+            text-align: center;
+            margin: 2rem 1rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: var(--border-radius);
+            border-left: 4px solid #f59e0b;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .note-section h3 {
+            color: #92400e;
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .note-section h3::before {
+            content: '📧';
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: 2rem;
+        }
+
+        footer p {
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        footer p:first-child {
+            font-weight: 500;
+        }
+
+        footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        footer a:hover {
+            color: #4fd1c5;
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                padding: 2rem 1rem;
+            }
+
+            .container {
+                margin: 1rem;
+                padding: 1rem;
+                border-radius: 12px;
+            }
+
+            .table-wrapper {
+                margin: 0 -0.5rem;
+                border-radius: 8px;
+            }
+
+            th, td {
+                padding: 0.75rem 0.85rem;
+                font-size: 0.85rem;
+            }
+
+            th {
+                font-size: 0.7rem;
+            }
+
+            .stat-item {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            .announcement h3 {
+                font-size: 0.85rem;
+            }
+
+            .announcement strong {
+                display: block;
+                margin-bottom: 0.5rem;
+            }
+
+            /* Card-style layout for mobile */
+            .table-wrapper {
+                overflow: visible;
+            }
+
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            tr {
+                margin-bottom: 1rem;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: var(--shadow-sm);
+            }
+
+            td {
+                position: relative;
+                padding: 1rem 1rem 1rem 45%;
+                text-align: right;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 1rem;
+                width: 40%;
+                text-align: left;
+                font-weight: 600;
+                color: var(--text-secondary);
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            /* Reset alternating row styles for mobile cards */
+            tbody tr:nth-child(even) td,
+            tbody tr:nth-child(odd) td {
+                background: white;
+            }
+
+            tbody tr:nth-child(even):hover td,
+            tbody tr:nth-child(odd):hover td {
+                background: white;
+            }
+
+            td:first-child,
+            tbody tr:nth-child(even) td:first-child,
+            tbody tr:nth-child(odd) td:first-child {
+                background: linear-gradient(135deg, var(--primary-color), var(--primary-light)) !important;
+                color: white;
+                border-radius: 12px 12px 0 0;
+            }
+
+            td:first-child::before {
+                color: rgba(255, 255, 255, 0.8);
+            }
+
+            td:last-child,
+            tbody tr:nth-child(even) td:last-child,
+            tbody tr:nth-child(odd) td:last-child {
+                border-radius: 0 0 12px 12px;
+                border-bottom: none;
+            }
+
+            tbody tr:hover {
+                transform: none;
+                box-shadow: var(--shadow-sm);
+            }
+
+            .stats-badge {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .note-section {
+                margin: 1.5rem 0.5rem;
+                padding: 1rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            header {
+                background: var(--primary-color) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .container {
+                box-shadow: none;
+                margin: 0;
+            }
+
+            tbody tr:hover {
+                transform: none;
+            }
+
+            footer {
+                background: #333 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Focus styles for keyboard navigation */
+        a:focus, button:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            :root {
+                --shadow-sm: 0 0 0 1px #000;
+                --shadow-md: 0 0 0 2px #000;
+            }
+
+            th, td {
+                border: 2px solid #000;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Christian Medical College, Vellore</h1>
+        <h2>Distance Education Unit</h2>
+        <h3>POST GRADUATE DIPLOMA IN FAMILY MEDICINE</h3>
+    </header>
+
+    <div class="announcement">
+        <h3><strong>Announcement:</strong> We are pleased to announce the list of selected candidates for PGDFM Course Batch-2026, May 7<sup>th</sup>, 2026.</h3>
+    </div>
+
+    <div class="container">
+        <div class="stats-badge">
+            <span class="stat-item">✓ 300 Candidates Selected</span>
+            <span class="stat-item">📅 Batch 2026</span>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Application Number</th>
+                        <th>Name of Candidate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>5-PGDFMApp-2026</td><td>Ahamed Ismail Mohamed Ilyas</td></tr>
+                    <tr><td>6-PGDFMApp-2026</td><td>Mohammad Abid</td></tr>
+                    <tr><td>7-PGDFMApp-2026</td><td>Vivek Kumar</td></tr>
+                    <tr><td>20-PGDFMApp-2026</td><td>Supreet M Chavan</td></tr>
+                    <tr><td>22-PGDFMApp-2026</td><td>Galla Krishna Chaitanya</td></tr>
+                    <tr><td>30-PGDFMApp-2026</td><td>Ahamed Rashika S</td></tr>
+                    <tr><td>33-PGDFMApp-2026</td><td>J.D.Prem Jerusha</td></tr>
+                    <tr><td>34-PGDFMApp-2026</td><td>S.Karthikeyan</td></tr>
+                    <tr><td>39-PGDFMApp-2026</td><td>Hemavathi Muthabathula</td></tr>
+                    <tr><td>46-PGDFMApp-2026</td><td>Manjunatha D R</td></tr>
+                    <tr><td>53-PGDFMApp-2026</td><td>Stephan Thomas Varghese</td></tr>
+                    <tr><td>56-PGDFMApp-2026</td><td>Chavithini Hymavathi</td></tr>
+                    <tr><td>57-PGDFMApp-2026</td><td>Malla Murali Bhaskar</td></tr>
+                    <tr><td>65-PGDFMApp-2026</td><td>Avanthika S Kumar</td></tr>
+                    <tr><td>71-PGDFMApp-2026</td><td>Sushant Gupta</td></tr>
+                    <tr><td>76-PGDFMApp-2026</td><td>Anupama B</td></tr>
+                    <tr><td>77-PGDFMApp-2026</td><td>Anmy Anto Vattakuzhy</td></tr>
+                    <tr><td>94-PGDFMApp-2026</td><td>Pynam Sunayana Kamala</td></tr>
+                    <tr><td>98-PGDFMApp-2026</td><td>Abhirami S Kumar</td></tr>
+                    <tr><td>100-PGDFMApp-2026</td><td>Benjamin Jasondoss C</td></tr>
+                    <tr><td>112-PGDFMApp-2026</td><td>Aashish Vaishnav</td></tr>
+                    <tr><td>124-PGDFMApp-2026</td><td>Saurabh</td></tr>
+                    <tr><td>133-PGDFMApp-2026</td><td>Anushka G.H</td></tr>
+                    <tr><td>139-PGDFMApp-2026</td><td>Kasula Jamsheer</td></tr>
+                    <tr><td>142-PGDFMApp-2026</td><td>Namratha Sadanandan T</td></tr>
+                    <tr><td>154-PGDFMApp-2026</td><td>Praveen Kumar R</td></tr>
+                    <tr><td>166-PGDFMApp-2026</td><td>Bilva Prabhakar</td></tr>
+                    <tr><td>168-PGDFMApp-2026</td><td>Rohit C</td></tr>
+                    <tr><td>191-PGDFMApp-2026</td><td>Vyshnavhy T</td></tr>
+                    <tr><td>202-PGDFMApp-2026</td><td>Anna Susan Paul</td></tr>
+                    <tr><td>220-PGDFMApp-2026</td><td>Karthikeyan G</td></tr>
+                    <tr><td>224-PGDFMApp-2026</td><td>Karpagaraj Umayaguru</td></tr>
+                    <tr><td>234-PGDFMApp-2026</td><td>Sowmya Manja Madha. I</td></tr>
+                    <tr><td>240-PGDFMApp-2026</td><td>Shivani Sinha</td></tr>
+                    <tr><td>241-PGDFMApp-2026</td><td>Nilofar Anjum</td></tr>
+                    <tr><td>247-PGDFMApp-2026</td><td>Ayothi Kallipatti Ramasamy</td></tr>
+                    <tr><td>275-PGDFMApp-2026</td><td>Nupur Goswami</td></tr>
+                    <tr><td>276-PGDFMApp-2026</td><td>Unnimaya C V</td></tr>
+                    <tr><td>279-PGDFMApp-2026</td><td>Attam Parkash</td></tr>
+                    <tr><td>300-PGDFMApp-2026</td><td>Syeda Aisha Effat</td></tr>
+                    <tr><td>301-PGDFMApp-2026</td><td>Salini Balachandran</td></tr>
+                    <tr><td>302-PGDFMApp-2026</td><td>Navanitha Krishnan T G</td></tr>
+                    <tr><td>305-PGDFMApp-2026</td><td>Aji Rani S Nair</td></tr>
+                    <tr><td>310-PGDFMApp-2026</td><td>Gopesh Kumar</td></tr>
+                    <tr><td>322-PGDFMApp-2026</td><td>Dhanasekar S</td></tr>
+                    <tr><td>326-PGDFMApp-2026</td><td>Akash Bhojgaria</td></tr>
+                    <tr><td>328-PGDFMApp-2026</td><td>Nandhini</td></tr>
+                    <tr><td>333-PGDFMApp-2026</td><td>Saliha Latheef K K</td></tr>
+                    <tr><td>339-PGDFMApp-2026</td><td>Pooja Ghosh</td></tr>
+                    <tr><td>340-PGDFMApp-2026</td><td>Pratibha Pillai</td></tr>
+                    <tr><td>347-PGDFMApp-2026</td><td>Shahina</td></tr>
+                    <tr><td>348-PGDFMApp-2026</td><td>Vinod Kumar Patra</td></tr>
+                    <tr><td>350-PGDFMApp-2026</td><td>Amina Kamal</td></tr>
+                    <tr><td>353-PGDFMApp-2026</td><td>Aditya Seth</td></tr>
+                    <tr><td>358-PGDFMApp-2026</td><td>Parameswari Pe</td></tr>
+                    <tr><td>361-PGDFMApp-2026</td><td>Chetan Shokeen</td></tr>
+                    <tr><td>374-PGDFMApp-2026</td><td>Narendra Bariya</td></tr>
+                    <tr><td>376-PGDFMApp-2026</td><td>Mohamed Asiq Abdul Wahid</td></tr>
+                    <tr><td>381-PGDFMApp-2026</td><td>Sathish Kumar M</td></tr>
+                    <tr><td>382-PGDFMApp-2026</td><td>Harsha Singh</td></tr>
+                    <tr><td>387-PGDFMApp-2026</td><td>Joshan Thomas</td></tr>
+                    <tr><td>388-PGDFMApp-2026</td><td>T.S.Amritha</td></tr>
+                    <tr><td>389-PGDFMApp-2026</td><td>Surbhi Sikka</td></tr>
+                    <tr><td>393-PGDFMApp-2026</td><td>Arif Hossain</td></tr>
+                    <tr><td>396-PGDFMApp-2026</td><td>Nirmal Kumar.V</td></tr>
+                    <tr><td>397-PGDFMApp-2026</td><td>Biny George</td></tr>
+                    <tr><td>400-PGDFMApp-2026</td><td>Shoba R</td></tr>
+                    <tr><td>402-PGDFMApp-2026</td><td>Vinod A</td></tr>
+                    <tr><td>403-PGDFMApp-2026</td><td>Bhavithra Bharathi S</td></tr>
+                    <tr><td>413-PGDFMApp-2026</td><td> Carin Coelho</td></tr>
+                    <tr><td>417-PGDFMApp-2026</td><td>Dasari Vignan Raju</td></tr>
+                    <tr><td>421-PGDFMApp-2026</td><td>Rinji V.V.</td></tr>
+                    <tr><td>422-PGDFMApp-2026</td><td>Arnold Anshuman Alphonse</td></tr>
+                    <tr><td>426-PGDFMApp-2026</td><td>Rajeev Ranjan</td></tr>
+                    <tr><td>432-PGDFMApp-2026</td><td>Jeya Lisha J</td></tr>
+                    <tr><td>435-PGDFMApp-2026</td><td>Geethanjali Murthy</td></tr>
+                    <tr><td>436-PGDFMApp-2026</td><td>Harini P.P</td></tr>
+                    <tr><td>438-PGDFMApp-2026</td><td>Devarapu Jaya Lakshmi</td></tr>
+                    <tr><td>447-PGDFMApp-2026</td><td>Ravinaik Nunavath</td></tr>
+                    <tr><td>454-PGDFMApp-2026</td><td>Ela Roy</td></tr>
+                    <tr><td>455-PGDFMApp-2026</td><td>Saurabh Kaushik</td></tr>
+                    <tr><td>456-PGDFMApp-2026</td><td>Thahira Shirin M</td></tr>
+                    <tr><td>468-PGDFMApp-2026</td><td>Aswathy Ann Wilson</td></tr>
+                    <tr><td>473-PGDFMApp-2026</td><td>Vinothkumar R</td></tr>
+                    <tr><td>479-PGDFMApp-2026</td><td>Subhankar Paul</td></tr>
+                    <tr><td>490-PGDFMApp-2026</td><td>Marisetty Manikanta Swamy</td></tr>
+                    <tr><td>492-PGDFMApp-2026</td><td>Md Fahham Shakil</td></tr>
+                    <tr><td>493-PGDFMApp-2026</td><td>Eunice Keziah C</td></tr>
+                    <tr><td>494-PGDFMApp-2026</td><td>Angelin Jemimah C</td></tr>
+                    <tr><td>497-PGDFMApp-2026</td><td>Rajnish Kumar</td></tr>
+                    <tr><td>499-PGDFMApp-2026</td><td>Farah Mumtaz</td></tr>
+                    <tr><td>510-PGDFMApp-2026</td><td>Dharmireddy Srinu</td></tr>
+                    <tr><td>524-PGDFMApp-2026</td><td>Divyanshu Vishvkarma</td></tr>
+                    <tr><td>526-PGDFMApp-2026</td><td>Prathibha Bhuvanagiri</td></tr>
+                    <tr><td>527-PGDFMApp-2026</td><td>Partheeben Bala</td></tr>
+                    <tr><td>528-PGDFMApp-2026</td><td>Vidushi Varma</td></tr>
+                    <tr><td>531-PGDFMApp-2026</td><td>Kavuru Ravindra</td></tr>
+                    <tr><td>532-PGDFMApp-2026</td><td>Rohit Kumar</td></tr>
+                    <tr><td>533-PGDFMApp-2026</td><td>Divyanshu Sharma</td></tr>
+                    <tr><td>540-PGDFMApp-2026</td><td>Shaji Dayana</td></tr>
+                    <tr><td>541-PGDFMApp-2026</td><td>Balaji Rangamgari</td></tr>
+                    <tr><td>546-PGDFMApp-2026</td><td>Bhavini Bhavesh Furia</td></tr>
+                    <tr><td>549-PGDFMApp-2026</td><td>Tanya Singh</td></tr>
+                    <tr><td>559-PGDFMApp-2026</td><td>Aswathy P N</td></tr>
+                    <tr><td>570-PGDFMApp-2026</td><td>Ashiq Ahammed</td></tr>
+                    <tr><td>572-PGDFMApp-2026</td><td>Vinti Govind</td></tr>
+                    <tr><td>573-PGDFMApp-2026</td><td>Gibin George</td></tr>
+                    <tr><td>584-PGDFMApp-2026</td><td>Chinthala John Bhaskar Reddy</td></tr>
+                    <tr><td>585-PGDFMApp-2026</td><td>Swarup Das</td></tr>
+                    <tr><td>594-PGDFMApp-2026</td><td>Smaranjit Patra</td></tr>
+                    <tr><td>605-PGDFMApp-2026</td><td>Priscilla</td></tr>
+                    <tr><td>606-PGDFMApp-2026</td><td>Lavanya Chinnachamy</td></tr>
+                    <tr><td>607-PGDFMApp-2026</td><td>Sailaja Gaddam</td></tr>
+                    <tr><td>610-PGDFMApp-2026</td><td>Annapoorani V</td></tr>
+                    <tr><td>611-PGDFMApp-2026</td><td>S Bharathi</td></tr>
+                    <tr><td>613-PGDFMApp-2026</td><td>Lakshmi Devi</td></tr>
+                    <tr><td>637-PGDFMApp-2026</td><td>Aravind Venkatachalam</td></tr>
+                    <tr><td>641-PGDFMApp-2026</td><td>Jayakalyani R</td></tr>
+                    <tr><td>643-PGDFMApp-2026</td><td>Dayal Johan Niranjan Pandian</td></tr>
+                    <tr><td>654-PGDFMApp-2026</td><td>Sonika Dhillon</td></tr>
+                    <tr><td>655-PGDFMApp-2026</td><td>Sathish Kumar V</td></tr>
+                    <tr><td>657-PGDFMApp-2026</td><td>Alomani Kerketta</td></tr>
+                    <tr><td>661-PGDFMApp-2026</td><td>Rajeshkumar Mp</td></tr>
+                    <tr><td>665-PGDFMApp-2026</td><td>Sharon Rose Paul</td></tr>
+                    <tr><td>668-PGDFMApp-2026</td><td>Arvind N</td></tr>
+                    <tr><td>705-PGDFMApp-2026</td><td>Prashant Rathod</td></tr>
+                    <tr><td>717-PGDFMApp-2026</td><td>Shadil K M</td></tr>
+                    <tr><td>727-PGDFMApp-2026</td><td>Malsawmkimi</td></tr>
+                    <tr><td>731-PGDFMApp-2026</td><td>Aneesha Shareefa Beevi Sharafuden</td></tr>
+                    <tr><td>735-PGDFMApp-2026</td><td>Sanjit Kaur Sra</td></tr>
+                    <tr><td>737-PGDFMApp-2026</td><td>Priyadharshini S</td></tr>
+                    <tr><td>740-PGDFMApp-2026</td><td>Sahitya Niranjali M</td></tr>
+                    <tr><td>748-PGDFMApp-2026</td><td>Rathibala A</td></tr>
+                    <tr><td>761-PGDFMApp-2026</td><td>Beautlin V Hn</td></tr>
+                    <tr><td>771-PGDFMApp-2026</td><td>Percia S Marbaniang</td></tr>
+                    <tr><td>773-PGDFMApp-2026</td><td>Sutarsha Pal</td></tr>
+                    <tr><td>782-PGDFMApp-2026</td><td>Keerthana G Krishna</td></tr>
+                    <tr><td>785-PGDFMApp-2026</td><td>Joel Blesso R</td></tr>
+                    <tr><td>786-PGDFMApp-2026</td><td>Lingudu Sowmya</td></tr>
+                    <tr><td>790-PGDFMApp-2026</td><td>Boobalan Gs</td></tr>
+                    <tr><td>791-PGDFMApp-2026</td><td>Mobin M B</td></tr>
+                    <tr><td>795-PGDFMApp-2026</td><td>Debasish Thakur</td></tr>
+                    <tr><td>799-PGDFMApp-2026</td><td>Vandana Valluri</td></tr>
+                    <tr><td>800-PGDFMApp-2026</td><td> G. Agnes Golda Priyadarshini</td></tr>
+                    <tr><td>806-PGDFMApp-2026</td><td>Nusrat Noor</td></tr>
+                    <tr><td>809-PGDFMApp-2026</td><td>Rajiv Ranjan</td></tr>
+                    <tr><td>817-PGDFMApp-2026</td><td>Hamti Debbarma</td></tr>
+                    <tr><td>828-PGDFMApp-2026</td><td>J.Ezhil</td></tr>
+                    <tr><td>833-PGDFMApp-2026</td><td>Riya Mary Alexander</td></tr>
+                    <tr><td>837-PGDFMApp-2026</td><td>Sivasankari M</td></tr>
+                    <tr><td>842-PGDFMApp-2026</td><td>Jibin Joseph</td></tr>
+                    <tr><td>849-PGDFMApp-2026</td><td>Sanjith Purushothaman</td></tr>
+                    <tr><td>853-PGDFMApp-2026</td><td>Perumallapalli Pavani</td></tr>
+                    <tr><td>858-PGDFMApp-2026</td><td>Gopika H</td></tr>
+                    <tr><td>859-PGDFMApp-2026</td><td>Shreya Gaur</td></tr>
+                    <tr><td>863-PGDFMApp-2026</td><td>Karishma P S</td></tr>
+                    <tr><td>864-PGDFMApp-2026</td><td>Shana Baby</td></tr>
+                    <tr><td>868-PGDFMApp-2026</td><td>Priyadharshini.S</td></tr>
+                    <tr><td>870-PGDFMApp-2026</td><td>Saqib Bin Qadir</td></tr>
+                    <tr><td>881-PGDFMApp-2026</td><td>Aditya Kasyap</td></tr>
+                    <tr><td>889-PGDFMApp-2026</td><td>Amal R</td></tr>
+                    <tr><td>891-PGDFMApp-2026</td><td>Bijali Niofar Salim</td></tr>
+                    <tr><td>896-PGDFMApp-2026</td><td>Hira Kant Singh</td></tr>
+                    <tr><td>899-PGDFMApp-2026</td><td>Saravana Kumar  Annavi</td></tr>
+                    <tr><td>905-PGDFMApp-2026</td><td>Kumari Mona</td></tr>
+                    <tr><td>914-PGDFMApp-2026</td><td>Sajitha Wilson Sujatha</td></tr>
+                    <tr><td>918-PGDFMApp-2026</td><td>Anita Susan Vasant</td></tr>
+                    <tr><td>922-PGDFMApp-2026</td><td>Akshay Rajan</td></tr>
+                    <tr><td>924-PGDFMApp-2026</td><td>Vetriselvan</td></tr>
+                    <tr><td>928-PGDFMApp-2026</td><td>Jyothis Vaikattil Ramachandran</td></tr>
+                    <tr><td>929-PGDFMApp-2026</td><td>Vaishnavi M J</td></tr>
+                    <tr><td>933-PGDFMApp-2026</td><td>Pradeep Dodda</td></tr>
+                    <tr><td>935-PGDFMApp-2026</td><td>Athippathi Jegathees Chandra Bose</td></tr>
+                    <tr><td>940-PGDFMApp-2026</td><td>Samarjit Chakraborty</td></tr>
+                    <tr><td>942-PGDFMApp-2026</td><td>Jeeva Shaji</td></tr>
+                    <tr><td>952-PGDFMApp-2026</td><td>Sivakami R</td></tr>
+                    <tr><td>967-PGDFMApp-2026</td><td>Saxena Rochak Avdhesh</td></tr>
+                    <tr><td>972-PGDFMApp-2026</td><td>Ida Pauline Seegan Paul</td></tr>
+                    <tr><td>974-PGDFMApp-2026</td><td>Amit Raja Panigrahi</td></tr>
+                    <tr><td>976-PGDFMApp-2026</td><td>Irfan Pathan</td></tr>
+                    <tr><td>978-PGDFMApp-2026</td><td>Sujitha</td></tr>
+                    <tr><td>980-PGDFMApp-2026</td><td>Elavarasi S</td></tr>
+                    <tr><td>983-PGDFMApp-2026</td><td>Sangeetha K</td></tr>
+                    <tr><td>988-PGDFMApp-2026</td><td>Sadab Faisal Ansari</td></tr>
+                    <tr><td>999-PGDFMApp-2026</td><td>Diviyaa Jc</td></tr>
+                    <tr><td>1003-PGDFMApp-2026</td><td>Nayan Pathak</td></tr>
+                    <tr><td>1004-PGDFMApp-2026</td><td>P Jessica Pearl Abigail</td></tr>
+                    <tr><td>1006-PGDFMApp-2026</td><td>Kanchan Bisan Jambhule</td></tr>
+                    <tr><td>1007-PGDFMApp-2026</td><td>Shijila Kk</td></tr>
+                    <tr><td>1008-PGDFMApp-2026</td><td>Ayesha</td></tr>
+                    <tr><td>1019-PGDFMApp-2026</td><td>Jongshina Jamir</td></tr>
+                    <tr><td>1020-PGDFMApp-2026</td><td> Muthuselvan, Murugesan</td></tr>
+                    <tr><td>1025-PGDFMApp-2026</td><td>Shailendra Pradhan</td></tr>
+                    <tr><td>1026-PGDFMApp-2026</td><td>Aasitha Deva Wisey R</td></tr>
+                    <tr><td>1027-PGDFMApp-2026</td><td>Subhankar Das</td></tr>
+                    <tr><td>1029-PGDFMApp-2026</td><td>Bindu S M</td></tr>
+                    <tr><td>1031-PGDFMApp-2026</td><td>Shaikh Raashid Yusuf</td></tr>
+                    <tr><td>1035-PGDFMApp-2026</td><td>Wakode Vivek Ramesh</td></tr>
+                    <tr><td>1037-PGDFMApp-2026</td><td>Arfas Thaj</td></tr>
+                    <tr><td>1040-PGDFMApp-2026</td><td>Ravpreet Kaur</td></tr>
+                    <tr><td>1043-PGDFMApp-2026</td><td>Katru Emmanuel</td></tr>
+                    <tr><td>1060-PGDFMApp-2026</td><td>Piyush Kumar</td></tr>
+                    <tr><td>1066-PGDFMApp-2026</td><td>Eunice Jezaniah</td></tr>
+                    <tr><td>1070-PGDFMApp-2026</td><td>Augustine Cyriac</td></tr>
+                    <tr><td>1073-PGDFMApp-2026</td><td>Aparna C S</td></tr>
+                    <tr><td>1074-PGDFMApp-2026</td><td>Ann Jacob</td></tr>
+                    <tr><td>1076-PGDFMApp-2026</td><td>Gurusanganabasava Hawaldar</td></tr>
+                    <tr><td>1089-PGDFMApp-2026</td><td>Chekurthi Shiva Teja</td></tr>
+                    <tr><td>1099-PGDFMApp-2026</td><td>Samuel Laldinthara</td></tr>
+                    <tr><td>1103-PGDFMApp-2026</td><td>Anand S</td></tr>
+                    <tr><td>1107-PGDFMApp-2026</td><td>Sreeja M K</td></tr>
+                    <tr><td>1108-PGDFMApp-2026</td><td>Nidheesh U C</td></tr>
+                    <tr><td>1110-PGDFMApp-2026</td><td>Vignesh S</td></tr>
+                    <tr><td>1113-PGDFMApp-2026</td><td>Ramya V S</td></tr>
+                    <tr><td>1114-PGDFMApp-2026</td><td>V Vandana</td></tr>
+                    <tr><td>1117-PGDFMApp-2026</td><td>Palla Akhilsai</td></tr>
+                    <tr><td>1121-PGDFMApp-2026</td><td>Aswini Priya T</td></tr>
+                    <tr><td>1122-PGDFMApp-2026</td><td>Sourav Sankar A R</td></tr>
+                    <tr><td>1124-PGDFMApp-2026</td><td>Srijin S</td></tr>
+                    <tr><td>1126-PGDFMApp-2026</td><td>Ramya B Nair</td></tr>
+                    <tr><td>1127-PGDFMApp-2026</td><td>Asha Ranjini S V</td></tr>
+                    <tr><td>1128-PGDFMApp-2026</td><td>Tontanga Momoson Maring</td></tr>
+                    <tr><td>1134-PGDFMApp-2026</td><td>Gedala Venkatesh</td></tr>
+                    <tr><td>1135-PGDFMApp-2026</td><td>Karampudi Amulya Sanghamithra</td></tr>
+                    <tr><td>1139-PGDFMApp-2026</td><td>Sreechithra B</td></tr>
+                    <tr><td>1141-PGDFMApp-2026</td><td>Sharma Radhika Shantilal</td></tr>
+                    <tr><td>1148-PGDFMApp-2026</td><td>Srimathi Perumal</td></tr>
+                    <tr><td>1149-PGDFMApp-2026</td><td>Sujaya A</td></tr>
+                    <tr><td>1150-PGDFMApp-2026</td><td>Sulfiyath Pp</td></tr>
+                    <tr><td>1155-PGDFMApp-2026</td><td>Abhishek Sadasivan</td></tr>
+                    <tr><td>1162-PGDFMApp-2026</td><td> Hadiya Shariff</td></tr>
+                    <tr><td>1166-PGDFMApp-2026</td><td>Sathesh Kumar</td></tr>
+                    <tr><td>1171-PGDFMApp-2026</td><td>Jyothi V G</td></tr>
+                    <tr><td>1176-PGDFMApp-2026</td><td>Rishi Kashyap</td></tr>
+                    <tr><td>1180-PGDFMApp-2026</td><td>Ruhul Amin</td></tr>
+                    <tr><td>1187-PGDFMApp-2026</td><td>Jaculin Cynthiya J</td></tr>
+                    <tr><td>1194-PGDFMApp-2026</td><td>Sandadi Viswa Bharath Reddy</td></tr>
+                    <tr><td>1196-PGDFMApp-2026</td><td>Devapriya V B</td></tr>
+                    <tr><td>1199-PGDFMApp-2026</td><td>Himachandra Nagababu Pujari</td></tr>
+                    <tr><td>1200-PGDFMApp-2026</td><td>Shaikh Sattar Shaikh Moula</td></tr>
+                    <tr><td>1206-PGDFMApp-2026</td><td>Preethi K</td></tr>
+                    <tr><td>1207-PGDFMApp-2026</td><td>Namesish Debbarma</td></tr>
+                    <tr><td>1209-PGDFMApp-2026</td><td>Lalrampari</td></tr>
+                    <tr><td>1212-PGDFMApp-2026</td><td> Sonia Soren</td></tr>
+                    <tr><td>1215-PGDFMApp-2026</td><td>Krishnaveni Perala</td></tr>
+                    <tr><td>1217-PGDFMApp-2026</td><td>Singh Sudhir Vivekanand</td></tr>
+                    <tr><td>1223-PGDFMApp-2026</td><td>Krishna Murari</td></tr>
+                    <tr><td>1224-PGDFMApp-2026</td><td>Ahire Niteen Subhash</td></tr>
+                    <tr><td>1227-PGDFMApp-2026</td><td>Karra Pragathi Priya</td></tr>
+                    <tr><td>1228-PGDFMApp-2026</td><td>Thiraviyaraj R</td></tr>
+                    <tr><td>1229-PGDFMApp-2026</td><td>Akanksha Yadav</td></tr>
+                    <tr><td>1230-PGDFMApp-2026</td><td>Allamdasu Bhanu Jennifer</td></tr>
+                    <tr><td>1232-PGDFMApp-2026</td><td>Ayesha Siddiqua Nawaz C.A</td></tr>
+                    <tr><td>1236-PGDFMApp-2026</td><td>Srishti Singh</td></tr>
+                    <tr><td>1237-PGDFMApp-2026</td><td>Shafeek M S</td></tr>
+                    <tr><td>1239-PGDFMApp-2026</td><td>Srikumar</td></tr>
+                    <tr><td>1241-PGDFMApp-2026</td><td>Anshula Sachdev</td></tr>
+                    <tr><td>1247-PGDFMApp-2026</td><td>Shafeeq N K</td></tr>
+                    <tr><td>1252-PGDFMApp-2026</td><td>Prem Rohit K</td></tr>
+                    <tr><td>1259-PGDFMApp-2026</td><td>Shaikh Daniya Noorain Mohammed Aqueel</td></tr>
+                    <tr><td>1264-PGDFMApp-2026</td><td>Anurag Mondal</td></tr>
+                    <tr><td>1269-PGDFMApp-2026</td><td>Nagamani N</td></tr>
+                    <tr><td>1272-PGDFMApp-2026</td><td>Saukat Das</td></tr>
+                    <tr><td>1273-PGDFMApp-2026</td><td>Prathiba</td></tr>
+                    <tr><td>1275-PGDFMApp-2026</td><td>Gaurav</td></tr>
+                    <tr><td>1278-PGDFMApp-2026</td><td>Mori Surya Teja</td></tr>
+                    <tr><td>1279-PGDFMApp-2026</td><td>Asiya M</td></tr>
+                    <tr><td>1280-PGDFMApp-2026</td><td>Azarudeen A</td></tr>
+                    <tr><td>1284-PGDFMApp-2026</td><td>Ashik S M</td></tr>
+                    <tr><td>1285-PGDFMApp-2026</td><td>Manivannan P</td></tr>
+                    <tr><td>1287-PGDFMApp-2026</td><td>Tania Manhas</td></tr>
+                    <tr><td>1288-PGDFMApp-2026</td><td>Rishu</td></tr>
+                    <tr><td>1292-PGDFMApp-2026</td><td>Swapnil Pavithran</td></tr>
+                    <tr><td>1294-PGDFMApp-2026</td><td>Benjamin Solomon Kingsley</td></tr>
+                    <tr><td>1311-PGDFMApp-2026</td><td>Kondani Sukumar Samarpan</td></tr>
+                    <tr><td>1313-PGDFMApp-2026</td><td>Boddu Seleena Grace</td></tr>
+                    <tr><td>1314-PGDFMApp-2026</td><td>Md Anjum Iquebal</td></tr>
+                    <tr><td>1316-PGDFMApp-2026</td><td>Thaker Ayushi Rajendra</td></tr>
+                    <tr><td>1334-PGDFMApp-2026</td><td> Twinkle Mourya</td></tr>
+                    <tr><td>1346-PGDFMApp-2026</td><td>Gowry V R</td></tr>
+                    <tr><td>1359-PGDFMApp-2026</td><td>Anuviyan.V</td></tr>
+                    <tr><td>1366-PGDFMApp-2026</td><td>Bale Raja Rathnam</td></tr>
+                    <tr><td>1370-PGDFMApp-2026</td><td>Saranya  P</td></tr>
+                    <tr><td>1381-PGDFMApp-2026</td><td>Gnanasekaran Thilak</td></tr>
+                    <tr><td>1388-PGDFMApp-2026</td><td>Nithyavikasini N</td></tr>
+                    <tr><td>1402-PGDFMApp-2026</td><td>Swapna Somraj</td></tr>
+                    <tr><td>1404-PGDFMApp-2026</td><td>Remalla Shyam Prasad</td></tr>
+                    <tr><td>1405-PGDFMApp-2026</td><td>Nafeesath Safa</td></tr>
+                    <tr><td>1412-PGDFMApp-2026</td><td>Darsi Sarada</td></tr>
+                    <tr><td>1420-PGDFMApp-2026</td><td>G Aruna</td></tr>
+                    <tr><td>1425-PGDFMApp-2026</td><td>Dhipan</td></tr>
+                    <tr><td>1427-PGDFMApp-2026</td><td>Kanhaiya Keshav</td></tr>
+                    <tr><td>1433-PGDFMApp-2026</td><td>Sheeja K H</td></tr>
+                    <tr><td>1435-PGDFMApp-2026</td><td>Wange Rushikesh Umakant</td></tr>
+                    <tr><td>1437-PGDFMApp-2026</td><td>Priya Cv</td></tr>
+                    <tr><td>1441-PGDFMApp-2026</td><td>Vishnu B</td></tr>
+                    <tr><td>1442-PGDFMApp-2026</td><td>Mohammed Safwan K</td></tr>
+                    <tr><td>1446-PGDFMApp-2026</td><td>D Venkata Vamsidhar Reddy</td></tr>
+                    <tr><td>1447-PGDFMApp-2026</td><td>Jeyasudha V</td></tr>
+                    <tr><td>1450-PGDFMApp-2026</td><td>Christin Jake Joseph</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="note-section">
+        <h3>NOTE: The selected candidates will receive an intimation email with all the relevant details shortly.</h3>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Distance Education Unit, CMC Vellore. All rights reserved.</p>
+        <p>Email: <a href="mailto:info@cmcdistedu.org">info@cmcdistedu.org</a></p>
+    </footer>
+</body>
+</html>
+
